@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>jbj.prod — Joel Bijoy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #08090D;
+      --surface:  #10111A;
+      --accent:   #D9A73A;
+      --text:     #EFEDE6;
+      --muted:    #52566B;
+      --border:   #1B1D26;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.045;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 1.5rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 500;
+      transition: background 0.4s, backdrop-filter 0.4s;
+    }
+
+    nav.scrolled {
+      background: rgba(8, 9, 13, 0.88);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 0.12em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-brand em {
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 400;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 3rem 5rem;
+      position: relative;
+    }
+
+    .hero-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+      font-weight: 400;
+    }
+
+    .hero-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5.5rem, 15vw, 13rem);
+      line-height: 0.88;
+      letter-spacing: 0.015em;
+      color: var(--text);
+      animation: fadeUp 0.9s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-sub {
+      margin-top: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .hero-sub p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      font-weight: 300;
+    }
+
+    .hero-sub .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .scroll-cue {
+      position: absolute;
+      right: 3rem;
+      bottom: 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .scroll-cue p {
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      writing-mode: vertical-rl;
+    }
+
+    .scroll-track {
+      width: 1px;
+      height: 3.5rem;
+      background: var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scroll-track::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 45%;
+      background: var(--accent);
+      animation: drip 1.6s ease-in-out infinite;
+    }
+
+    @keyframes drip {
+      0%   { transform: translateY(-100%); opacity: 1; }
+      85%  { opacity: 1; }
+      100% { transform: translateY(280%); opacity: 0; }
+    }
+
+    .strip-wrap {
+      width: 100%;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      padding: 0.55rem 0;
+    }
+
+    .strip-track {
+      display: flex;
+      gap: 1.4rem;
+      width: max-content;
+      animation: filmroll 12s linear infinite;
+    }
+
+    .perf {
+      width: 11px;
+      height: 15px;
+      border-radius: 2px;
+      border: 1px solid var(--accent);
+      opacity: 0.35;
+      flex-shrink: 0;
+    }
+
+    @keyframes filmroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .work {
+      padding: 5rem 3rem;
+    }
+
+    .section-hd {
+      display: flex;
+      align-items: baseline;
+      gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+
+    .section-hd h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      letter-spacing: 0.08em;
+      line-height: 1;
+    }
+
+    .section-hd span {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    .card {
+      position: relative;
+      grid-column: span 4;
+      aspect-ratio: 16 / 9;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .card:nth-child(3),
+    .card:nth-child(5) {
+      grid-column: span 3;
+    }
+
+    .card--vertical {
+      grid-column: span 2;
+      aspect-ratio: 9 / 16;
+      max-height: 520px;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+    }
+
+    .card-tag {
+      position: absolute;
+      top: 0.9rem;
+      right: 0.9rem;
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(8, 9, 13, 0.82);
+      padding: 0.2rem 0.55rem;
+      z-index: 10;
+      font-weight: 500;
+      pointer-events: none;
+    }
+
+    .card iframe,
+    .card video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      object-fit: cover;
+    }
+
+    .card-fill {
+      position: absolute;
+      inset: 0;
+    }
+
+    .fill-coming {
+      background: var(--surface);
+    }
+
+    .card-hover {
+      position: absolute;
+      inset: 0;
+      background: rgba(8, 9, 13, 0.72);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.4rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .card:hover .card-hover {
+      opacity: 1;
+    }
+
+    .card-hover h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.7rem;
+      letter-spacing: 0.07em;
+      line-height: 1;
+      margin-bottom: 0.35rem;
+      transform: translateY(6px);
+      transition: transform 0.3s;
+    }
+
+    .card:hover .card-hover h3 {
+      transform: translateY(0);
+    }
+
+    .card-hover p {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      transform: translateY(6px);
+      transition: transform 0.3s 0.04s;
+    }
+
+    .card:hover .card-hover p {
+      transform: translateY(0);
+    }
+
+    .coming-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .coming-inner strong {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 0.25em;
+      color: var(--muted);
+    }
+
+    .coming-inner em {
+      font-style: normal;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.7;
+    }
+
+    .about {
+      padding: 5.5rem 4.5rem 6rem;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 0.82fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    .about-main {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+      max-width: 640px;
+    }
+
+    .about-eyebrow {
+      font-size: 0.68rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.4rem;
+      font-weight: 400;
+    }
+
+    .about-text {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.85;
+    }
+
+    .about-text strong {
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    .about-photo {
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      object-position: top center;
+      border: 1px solid var(--border);
+      justify-self: start;
+      align-self: start;
+      margin-top: 0;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem;
+      margin-top: 0.7rem;
+    }
+
+    .stat-n {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 5.4rem;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      line-height: 0.85;
+    }
+
+    .stat-n sup {
+      color: var(--accent);
+      font-size: 2.6rem;
+    }
+
+    .stat-l {
+      font-size: 0.82rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.8rem;
+    }
+
+    .contact {
+      padding: 6rem 3rem;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+
+    .contact h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      letter-spacing: 0.04em;
+      line-height: 0.92;
+      margin-bottom: 2.5rem;
+    }
+
+    .contact h2 span {
+      color: var(--accent);
+    }
+
+    .contact-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .contact-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 400;
+      padding-bottom: 0.2rem;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.25s, border-color 0.25s;
+    }
+
+    .contact-link:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    footer {
+      padding: 1.2rem 3rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer p {
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        padding: 1.2rem 1.5rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 0 1.5rem 4rem;
+      }
+
+      .scroll-cue {
+        display: none;
+      }
+
+      .work {
+        padding: 4rem 1.5rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card,
+      .card:nth-child(3),
+      .card:nth-child(5),
+      .card--vertical {
+        grid-column: 1 / -1;
+        max-height: none;
+      }
+
+      .about {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        padding: 4rem 1.5rem;
+      }
+
+      .about-main {
+        max-width: none;
+        gap: 2.5rem;
+      }
+
+      .about-photo {
+        max-width: 100%;
+        justify-self: start;
+        align-self: start;
+        object-position: top center;
+      }
+
+      .stat-n {
+        font-size: 4.2rem;
+      }
+
+      .stat-n sup {
+        font-size: 2rem;
+      }
+
+      .stat-l {
+        font-size: 0.72rem;
+      }
+
+      .contact {
+        padding: 4rem 1.5rem;
+      }
+
+      footer {
+        padding: 1.2rem 1.5rem;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .card-hover {
+        opacity: 1;
+        background: rgba(8, 9, 13, 0.6);
+      }
+
+      .card-hover h3 {
+        transform: none;
+      }
+
+      .card-hover p {
+        transform: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav id="nav">
+    <a href="#" class="nav-brand">jbj<em>.</em>prod</a>
+    <ul class="nav-links">
+      <li><a href="#work">Work</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero" id="top">
+    <p class="hero-label">Videographer &amp; Editor</p>
+    <h1 class="hero-name">JOEL<br>BIJOY</h1>
+
+    <div class="hero-sub">
+      <p>Short Form</p>
+      <div class="dot"></div>
+      <p>Documentary</p>
+      <div class="dot"></div>
+      <p>Narrative</p>
+    </div>
+
+    <div class="scroll-cue">
+      <div class="scroll-track"></div>
+      <p>Scroll</p>
+    </div>
+  </section>
+
+  <div class="strip-wrap">
+    <div class="strip-track" id="strip"></div>
+  </div>
+
+  <section class="work" id="work">
+    <div class="section-hd">
+      <h2>Work</h2>
+      <span>05 Projects</span>
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <span class="card-tag">Short Film</span>
+        <iframe
+          src="https://www.youtube.com/embed/eqUWgmG2RaY?modestbranding=1&rel=0&color=white"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy"
+          title="Film Contest — An Item That Gains Importance Over Time">
+        </iframe>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Documentary</span>
+        <video controls playsinline>
+          <source src="projects/Chemistry Cinematic Video Project.mp4" type="video/mp4">
+        </video>
+        <div class="card-hover">
+          <h3>Chemistry</h3>
+          <p>Cinematic documentary — college project</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Short Form</span>
+        <video controls playsinline>
+          <source src="projects/RMG Promo 1.mp4" type="video/mp4">
+        </video>
+        <div class="card-hover">
+          <h3>RMG Promo</h3>
+          <p>Short form promotional content</p>
+        </div>
+      </div>
+
+      <div class="card card--vertical">
+        <span class="card-tag">Short Form</span>
+        <video controls playsinline>
+          <source src="projects/RMG Promo 2.mp4" type="video/mp4">
+        </video>
+        <div class="card-hover">
+          <h3>RMG Promo II</h3>
+          <p>Short form promotional content</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Brand Promo</span>
+        <div class="card-fill fill-coming"></div>
+        <div class="coming-inner">
+          <strong>PHOCUSD CUTS</strong>
+          <em>Coming Soon</em>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="strip-wrap">
+    <div class="strip-track" id="strip2"></div>
+  </div>
+
+  <section class="about" id="about">
+    <div class="about-main">
+      <div>
+        <p class="about-eyebrow">About</p>
+        <p class="about-text">
+          <strong>Joel Bijoy</strong> — based in Seattle, Washington.
+          I’ve been making videos for years, starting with school projects, edits, and short films, 
+          but recently I’ve been taking it more seriously and building work for real people and businesses. 
+          I like making videos that bring color and capture the moment. Most of my work is short-form, promotional, and story-based.
+          Whether it’s a barbershop, a sports edit, or a more personal project, 
+          <strong>I care about what the client wants.</strong>
+        </p>
+      </div>
+
+      <div class="stats">
+        <div>
+          <p class="stat-n">05<sup>+</sup></p>
+          <p class="stat-l">Projects</p>
+        </div>
+        <div>
+          <p class="stat-n">SEA</p>
+          <p class="stat-l">Based</p>
+        </div>
+      </div>
+    </div>
+
+    <img src="baddiejoel.JPG" alt="Joel Bijoy" class="about-photo">
+  </section>
+
+  <section class="contact" id="contact">
+    <h2>Let's<br>work<span>.</span></h2>
+    <div class="contact-links">
+      <a href="mailto:joeldbijoy@gmail.com" class="contact-link">joeldbijoy@gmail.com</a>
+      <a href="https://instagram.com/shotbyjbj" class="contact-link" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 jbj.prod</p>
+    <p>Joel Bijoy · Seattle, WA</p>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    function buildStrip(el) {
+      const fragment = document.createDocumentFragment();
+
+      for (let i = 0; i < 90; i++) {
+        const d = document.createElement('div');
+        d.className = 'perf';
+        fragment.appendChild(d);
+      }
+
+      el.appendChild(fragment);
+    }
+
+    buildStrip(document.getElementById('strip'));
+    buildStrip(document.getElementById('strip2'));
+  </script>
+
+</body>
+</html>
