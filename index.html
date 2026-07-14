@@ -27,6 +27,9 @@
       --bg: #08090D;
       --surface: #10111A;
       --accent: #D9A73A;
+      --accent-coral: #D9573A;
+      --accent-teal: #2FA69C;
+      --accent-violet: #8C6FD9;
       --text: #EFEDE6;
       --muted: #52566B;
       --border: #1B1D26;
@@ -45,6 +48,39 @@
       overflow-x: hidden;
     }
 
+    .ambient {
+      position: fixed;
+      inset: -12%;
+
+      z-index: -1;
+
+      background:
+        radial-gradient(circle at 14% 22%, rgba(140, 111, 217, 0.20), transparent 34%),
+        radial-gradient(circle at 86% 12%, rgba(47, 166, 156, 0.20), transparent 36%),
+        radial-gradient(circle at 78% 82%, rgba(217, 87, 58, 0.18), transparent 38%),
+        radial-gradient(circle at 18% 86%, rgba(217, 167, 58, 0.16), transparent 36%);
+
+      filter: blur(60px);
+
+      animation: ambientDrift 24s ease-in-out infinite alternate;
+
+      pointer-events: none;
+    }
+
+    @keyframes ambientDrift {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(-2.5%, 2%) scale(1.08);
+      }
+
+      100% {
+        transform: translate(2%, -1.5%) scale(1.04);
+      }
+    }
+
     body::after {
       content: "";
       position: fixed;
@@ -55,6 +91,30 @@
       opacity: 0.045;
       pointer-events: none;
       z-index: 9999;
+    }
+
+    /* ---------- reel progress bar ---------- */
+    .reel-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+
+      z-index: 1000;
+
+      background: var(--border);
+    }
+
+    .reel-progress-fill {
+      height: 100%;
+      width: 0%;
+
+      background: linear-gradient(90deg, var(--accent-violet), var(--accent-coral), var(--accent), var(--accent-teal));
+      box-shadow: 0 0 8px rgba(217, 167, 58, 0.5);
+
+      transform-origin: left;
+      transition: width 0.05s linear;
     }
 
     nav {
@@ -102,6 +162,8 @@
     }
 
     .nav-links a {
+      position: relative;
+
       color: var(--muted);
       text-decoration: none;
 
@@ -113,63 +175,183 @@
       transition: color 0.2s;
     }
 
+    .nav-links a::after {
+      content: "";
+
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+
+      width: 100%;
+      height: 1px;
+
+      background: var(--accent);
+
+      transform: scaleX(0);
+      transform-origin: left;
+
+      transition: transform 0.3s ease;
+    }
+
     .nav-links a:hover {
       color: var(--text);
     }
 
-    .hero {
-      min-height: 100vh;
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+
+    /* ---------- hero: pinned scroll-scrubbed zoom-through-the-text ---------- */
+    .hero-scroll {
+      position: relative;
+      height: 320vh;
+    }
+
+    .hero-pin {
+      position: sticky;
+      top: 0;
+
+      height: 100vh;
 
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+      align-items: center;
+      justify-content: center;
 
-      padding: 0 3rem 5rem;
+      overflow: hidden;
 
+      padding: 0 3rem;
+
+      perspective: 1px;
+      perspective-origin: 50% 50%;
+    }
+
+    .hero-flash {
+      position: absolute;
+      inset: 0;
+
+      z-index: 4;
+
+      background:
+        radial-gradient(circle at 42% 46%, rgba(239, 237, 230, 0.92), transparent 34%),
+        radial-gradient(circle at 50% 50%, rgba(217, 167, 58, 0.55), transparent 46%),
+        radial-gradient(circle at 58% 54%, rgba(217, 87, 58, 0.4), transparent 58%),
+        radial-gradient(circle at 50% 50%, rgba(47, 166, 156, 0.32), transparent 72%);
+
+      opacity: 0;
+
+      mix-blend-mode: screen;
+
+      pointer-events: none;
+    }
+
+    .hero-lines {
+      position: absolute;
+      inset: 0;
+
+      z-index: 1;
+
+      width: 100%;
+      height: 100%;
+
+      overflow: visible;
+
+      pointer-events: none;
+
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+    }
+
+    .line-path {
+      fill: none;
+
+      stroke-width: 13;
+      stroke-linecap: round;
+
+      opacity: 0.9;
+    }
+
+    .line-path.c-gold {
+      stroke: var(--accent);
+      filter: drop-shadow(0 0 14px rgba(217, 167, 58, 0.55));
+    }
+
+    .line-path.c-coral {
+      stroke: var(--accent-coral);
+      filter: drop-shadow(0 0 14px rgba(217, 87, 58, 0.55));
+    }
+
+    .line-path.c-teal {
+      stroke: var(--accent-teal);
+      filter: drop-shadow(0 0 14px rgba(47, 166, 156, 0.55));
+    }
+
+    .line-path.c-violet {
+      stroke: var(--accent-violet);
+      filter: drop-shadow(0 0 14px rgba(140, 111, 217, 0.55));
+    }
+
+    .hero-title {
       position: relative;
+      z-index: 2;
+
+      font-family: "Bebas Neue", sans-serif;
+
+      font-size: clamp(4.5rem, 14vw, 12rem);
+      line-height: 0.88;
+      letter-spacing: 0.015em;
+
+      color: var(--text);
+
+      text-align: center;
+
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: center;
+
+      white-space: nowrap;
+
+      transform-style: preserve-3d;
+    }
+
+    .letter {
+      display: inline-block;
+
+      will-change: transform, opacity, filter;
+      transform-style: preserve-3d;
     }
 
     .hero-label {
+      position: relative;
+      z-index: 2;
+
       font-size: 0.68rem;
       letter-spacing: 0.3em;
       text-transform: uppercase;
 
       color: var(--accent);
 
-      margin-bottom: 1.2rem;
+      margin-bottom: 1.4rem;
       font-weight: 400;
-    }
 
-    .hero-name {
-      font-family: "Bebas Neue", sans-serif;
-
-      font-size: clamp(5.5rem, 15vw, 13rem);
-      line-height: 0.88;
-      letter-spacing: 0.015em;
-
-      color: var(--text);
-
-      animation: fadeUp 0.9s ease both;
-    }
-
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(24px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      will-change: opacity, transform;
     }
 
     .hero-sub {
+      position: relative;
+      z-index: 2;
+
       margin-top: 2rem;
 
       display: flex;
       align-items: center;
       gap: 2rem;
+
+      will-change: opacity, transform;
     }
 
     .hero-sub p {
@@ -178,7 +360,13 @@
 
       letter-spacing: 0.12em;
       font-weight: 300;
+
+      transition: color 0.3s;
     }
+
+    .hero-sub p:hover.tag-coral { color: var(--accent-coral); }
+    .hero-sub p:hover.tag-teal { color: var(--accent-teal); }
+    .hero-sub p:hover.tag-violet { color: var(--accent-violet); }
 
     .hero-sub .dot {
       width: 4px;
@@ -194,6 +382,8 @@
       position: absolute;
       right: 3rem;
       bottom: 4rem;
+
+      z-index: 2;
 
       display: flex;
       flex-direction: column;
@@ -316,6 +506,16 @@
       font-size: 3rem;
       letter-spacing: 0.08em;
       line-height: 1;
+
+      position: relative;
+
+      clip-path: inset(0 100% 0 0);
+
+      transition: clip-path 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .section-hd.is-visible h2 {
+      clip-path: inset(0 0 0 0);
     }
 
     .section-hd span {
@@ -325,6 +525,16 @@
       color: var(--muted);
 
       text-transform: uppercase;
+
+      opacity: 0;
+      transform: translateX(-8px);
+
+      transition: opacity 0.6s ease 0.35s, transform 0.6s ease 0.35s;
+    }
+
+    .section-hd.is-visible span {
+      opacity: 1;
+      transform: translateX(0);
     }
 
     .grid {
@@ -350,7 +560,18 @@
 
       overflow: hidden;
 
-      transition: border-color 0.3s;
+      transition: border-color 0.3s, transform 0.3s ease;
+
+      opacity: 0;
+      transform: translateY(56px) scale(0.97);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.3s;
+    }
+
+    .card.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
 
     .card:nth-child(3),
@@ -368,6 +589,43 @@
 
     .card:hover {
       border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+
+    .card[data-hue="teal"]:hover { border-color: var(--accent-teal); }
+    .card[data-hue="coral"]:hover { border-color: var(--accent-coral); }
+    .card[data-hue="violet"]:hover { border-color: var(--accent-violet); }
+
+    .card.is-visible:hover {
+      transform: translateY(-4px) scale(1);
+    }
+
+    .card::before {
+      content: "";
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+
+      height: 2px;
+
+      background: var(--accent);
+
+      transform: scaleX(0);
+      transform-origin: left;
+
+      transition: transform 0.4s ease;
+
+      z-index: 11;
+    }
+
+    .card[data-hue="teal"]::before { background: var(--accent-teal); }
+    .card[data-hue="coral"]::before { background: var(--accent-coral); }
+    .card[data-hue="violet"]::before { background: var(--accent-violet); }
+
+    .card:hover::before {
+      transform: scaleX(1);
     }
 
     .card-tag {
@@ -390,6 +648,10 @@
 
       pointer-events: none;
     }
+
+    .card[data-hue="teal"] .card-tag { color: var(--accent-teal); }
+    .card[data-hue="coral"] .card-tag { color: var(--accent-coral); }
+    .card[data-hue="violet"] .card-tag { color: var(--accent-violet); }
 
     .card iframe,
     .card video {
@@ -545,6 +807,17 @@
       color: var(--muted);
 
       line-height: 1.85;
+
+      opacity: 0;
+      transform: translateY(24px);
+
+      transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .about-text.is-visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .about-text strong {
@@ -568,6 +841,20 @@
       align-self: start;
 
       margin-top: 0;
+
+      opacity: 0;
+      transform: translateY(30px) scale(1.04);
+      filter: grayscale(0.4);
+
+      transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+        filter 1s ease;
+    }
+
+    .about-photo.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: grayscale(0);
     }
 
     .stats {
@@ -578,6 +865,22 @@
       gap: 3.5rem;
 
       margin-top: 0.7rem;
+    }
+
+    .stats > div {
+      opacity: 0;
+      transform: translateY(20px);
+
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .stats > div.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .stats > div:nth-child(2) {
+      transition-delay: 0.12s;
     }
 
     .stat-n {
@@ -613,6 +916,8 @@
       background: var(--surface);
 
       border-top: 1px solid var(--border);
+
+      overflow: hidden;
     }
 
     .contact h2 {
@@ -623,6 +928,14 @@
       line-height: 0.92;
 
       margin-bottom: 2.5rem;
+
+      clip-path: inset(0 0 100% 0);
+
+      transition: clip-path 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .contact h2.is-visible {
+      clip-path: inset(0 0 0% 0);
     }
 
     .contact h2 span {
@@ -637,6 +950,8 @@
     }
 
     .contact-link {
+      position: relative;
+
       color: var(--muted);
 
       text-decoration: none;
@@ -654,6 +969,23 @@
       transition:
         color 0.25s,
         border-color 0.25s;
+
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
+    .contact-link.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition:
+        color 0.25s,
+        border-color 0.25s,
+        opacity 0.6s ease,
+        transform 0.6s ease;
+    }
+
+    .contact-links .contact-link:nth-child(2).is-visible {
+      transition-delay: 0.1s;
     }
 
     .contact-link:hover {
@@ -679,6 +1011,54 @@
       letter-spacing: 0.12em;
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .section-hd h2,
+      .section-hd span,
+      .card,
+      .about-text,
+      .about-photo,
+      .stats > div,
+      .contact h2,
+      .contact-link {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        clip-path: inset(0 0 0 0) !important;
+      }
+
+      .hero-scroll {
+        height: auto;
+      }
+
+      .hero-pin {
+        position: relative;
+        height: 100vh;
+      }
+
+      .hero-flash {
+        display: none !important;
+      }
+
+      .hero-lines {
+        display: none !important;
+      }
+
+      .ambient {
+        animation: none !important;
+      }
+
+      .letter {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+      }
+    }
+
     @media (max-width: 768px) {
       nav {
         padding: 1.2rem 1.5rem;
@@ -688,8 +1068,8 @@
         display: none;
       }
 
-      .hero {
-        padding: 0 1.5rem 4rem;
+      .hero-pin {
+        padding: 0 1.5rem;
       }
 
       .scroll-cue {
@@ -778,6 +1158,12 @@
 
 <body>
 
+  <div class="ambient"></div>
+
+  <div class="reel-progress">
+    <div class="reel-progress-fill" id="reelFill"></div>
+  </div>
+
   <nav id="nav">
     <a href="#" class="nav-brand">
       jbj<em>.</em>prod
@@ -798,32 +1184,45 @@
     </ul>
   </nav>
 
-  <section class="hero" id="top">
-    <p class="hero-label">
-      Videographer &amp; Editor
-    </p>
+  <section class="hero-scroll" id="top">
+    <div class="hero-pin">
+      <div class="hero-flash" id="heroFlash"></div>
 
-    <h1 class="hero-name">
-      JOEL<br>
-      BIJOY
-    </h1>
+      <svg class="hero-lines" id="heroLines" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <path class="line-path c-gold" d="M500,320 C 400,250 260,190 60,150" />
+        <path class="line-path c-teal" d="M500,320 C 610,250 750,190 950,150" />
+        <path class="line-path c-coral" d="M500,320 C 420,380 280,470 90,540" />
+        <path class="line-path c-violet" d="M500,320 C 590,380 730,470 920,540" />
+        <path class="line-path c-violet" d="M500,320 C 505,220 500,110 480,10" />
+        <path class="line-path c-coral" d="M500,320 C 495,420 500,530 520,630" />
+      </svg>
 
-    <div class="hero-sub">
-      <p>Short Form</p>
+      <p class="hero-label">
+        Videographer &amp; Editor
+      </p>
 
-      <div class="dot"></div>
+      <h1 class="hero-title" id="heroTitle" aria-label="Joel Bijoy">
+        <div class="title-row" data-row="0" data-word="JOEL"></div>
+        <div class="title-row" data-row="1" data-word="BIJOY"></div>
+      </h1>
 
-      <p>Documentary</p>
+      <div class="hero-sub">
+        <p class="tag-coral">Short Form</p>
 
-      <div class="dot"></div>
+        <div class="dot" style="background: var(--accent-coral);"></div>
 
-      <p>Narrative</p>
-    </div>
+        <p class="tag-teal">Documentary</p>
 
-    <div class="scroll-cue">
-      <div class="scroll-track"></div>
+        <div class="dot" style="background: var(--accent-teal);"></div>
 
-      <p>Scroll</p>
+        <p class="tag-violet">Narrative</p>
+      </div>
+
+      <div class="scroll-cue">
+        <div class="scroll-track"></div>
+
+        <p>Scroll</p>
+      </div>
     </div>
   </section>
 
@@ -832,7 +1231,7 @@
   </div>
 
   <section class="work" id="work">
-    <div class="section-hd">
+    <div class="section-hd" data-reveal>
       <h2>Work</h2>
 
       <span>05 Projects</span>
@@ -840,7 +1239,7 @@
 
     <div class="grid">
 
-      <div class="card">
+      <div class="card" data-reveal data-hue="violet">
         <span class="card-tag">
           Short Film
         </span>
@@ -854,7 +1253,7 @@
         </iframe>
       </div>
 
-      <div class="card">
+      <div class="card" data-reveal data-hue="teal">
         <span class="card-tag">
           Documentary
         </span>
@@ -877,7 +1276,7 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" data-reveal data-hue="coral">
         <span class="card-tag">
           Short Form
         </span>
@@ -900,7 +1299,7 @@
         </div>
       </div>
 
-      <div class="card card--vertical">
+      <div class="card card--vertical" data-reveal data-hue="coral">
         <span class="card-tag">
           Short Form
         </span>
@@ -923,7 +1322,7 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" data-reveal>
         <span class="card-tag">
           Brand Promo
         </span>
@@ -952,7 +1351,7 @@
           About
         </p>
 
-        <p class="about-text">
+        <p class="about-text" data-reveal>
           <strong>Joel Bijoy</strong> — based in Seattle, Washington.
 
           I’ve been making videos for years, starting with school projects,
@@ -968,9 +1367,9 @@
       </div>
 
       <div class="stats">
-        <div>
+        <div data-reveal>
           <p class="stat-n">
-            05<sup>+</sup>
+            <span class="stat-count" data-target="5">00</span><sup>+</sup>
           </p>
 
           <p class="stat-l">
@@ -978,7 +1377,7 @@
           </p>
         </div>
 
-        <div>
+        <div data-reveal>
           <p class="stat-n">
             SEA
           </p>
@@ -995,11 +1394,12 @@
       src="Resume (2).png"
       alt="Joel Bijoy"
       class="about-photo"
+      data-reveal
     >
   </section>
 
   <section class="contact" id="contact">
-    <h2>
+    <h2 data-reveal>
       Let's<br>
       work<span>.</span>
     </h2>
@@ -1007,7 +1407,8 @@
     <div class="contact-links">
       <a
         href="mailto:joeldbijoy@gmail.com"
-        class="contact-link">
+        class="contact-link"
+        data-reveal>
         joeldbijoy@gmail.com
       </a>
 
@@ -1015,7 +1416,8 @@
         href="https://instagram.com/shotbyjbj"
         class="contact-link"
         target="_blank"
-        rel="noopener">
+        rel="noopener"
+        data-reveal>
         Instagram
       </a>
     </div>
@@ -1033,6 +1435,7 @@
 
   <script>
     const nav = document.getElementById("nav");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     window.addEventListener(
       "scroll",
@@ -1049,11 +1452,18 @@
 
     function buildStrip(element) {
       const fragment = document.createDocumentFragment();
+      const hues = [
+        "var(--accent)",
+        "var(--accent-coral)",
+        "var(--accent-teal)",
+        "var(--accent-violet)"
+      ];
 
       for (let i = 0; i < 90; i++) {
         const perforation = document.createElement("div");
 
         perforation.className = "perf";
+        perforation.style.borderColor = hues[i % hues.length];
 
         fragment.appendChild(perforation);
       }
@@ -1068,6 +1478,220 @@
     buildStrip(
       document.getElementById("strip2")
     );
+
+    /* ---------- reel progress bar : fills as you scroll the whole page ---------- */
+    const reelFill = document.getElementById("reelFill");
+
+    function updateReelProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+      reelFill.style.width = pct + "%";
+    }
+
+    /* ---------- hero: build per-letter spans, camera zooms through the whole word on scroll ---------- */
+    const heroScroll = document.getElementById("top");
+    const heroFlash = document.getElementById("heroFlash");
+    const heroTitle = document.getElementById("heroTitle");
+    const heroLines = document.getElementById("heroLines");
+    const linePaths = Array.from(document.querySelectorAll(".line-path"));
+    const heroLabelEl = document.querySelector(".hero-label");
+    const heroSubEl = document.querySelector(".hero-sub");
+    const scrollCueEl = document.querySelector(".scroll-cue");
+    const titleRows = document.querySelectorAll(".title-row");
+
+    linePaths.forEach((path) => {
+      const len = path.getTotalLength();
+      path.dataset.len = len;
+      path.style.strokeDasharray = String(len);
+      path.style.strokeDashoffset = String(len);
+    });
+
+    let allLetters = [];
+
+    titleRows.forEach((row) => {
+      const word = row.dataset.word;
+      const chars = word.split("");
+      const mid = (chars.length - 1) / 2;
+
+      chars.forEach((ch, i) => {
+        const span = document.createElement("span");
+        span.className = "letter";
+        span.textContent = ch;
+
+        const distFromCenter = i - mid;
+        const dir = distFromCenter === 0 ? (i % 2 === 0 ? -1 : 1) : Math.sign(distFromCenter);
+
+        span.dataset.dir = dir;
+        span.dataset.mag = Math.abs(distFromCenter) + 1;
+
+        row.appendChild(span);
+        allLetters.push(span);
+      });
+    });
+
+    function easeIn(t, power) {
+      return Math.pow(t, power);
+    }
+
+    function updateHeroZoom() {
+      if (reducedMotion) return;
+
+      const rect = heroScroll.getBoundingClientRect();
+      const scrollable = heroScroll.offsetHeight - window.innerHeight;
+
+      const progress = scrollable > 0
+        ? Math.min(Math.max(-rect.top / scrollable, 0), 1)
+        : 0;
+
+      /* camera pushes in: the word grows enormous, the gaps between
+         letters widen, and everything rushes past like flying through it */
+      const zoom = 1 + easeIn(progress, 2.1) * 70;
+      const tracking = 0.015 + progress * 2.6;
+      const punchBlur = progress > 0.72 ? (progress - 0.72) / 0.28 * 9 : 0;
+      const titleOpacity = progress < 0.86 ? 1 : Math.max(0, 1 - (progress - 0.86) / 0.14);
+      const split = Math.min(progress * 5, 4.5);
+
+      heroTitle.style.transform = `scale(${zoom})`;
+      heroTitle.style.letterSpacing = `${tracking}em`;
+      heroTitle.style.filter = punchBlur > 0 ? `blur(${punchBlur}px)` : "none";
+      heroTitle.style.opacity = titleOpacity;
+      heroTitle.style.textShadow = progress > 0.02
+        ? `${split}px 0 0 rgba(217, 87, 58, 0.55), -${split}px 0 0 rgba(47, 166, 156, 0.55)`
+        : "none";
+
+      allLetters.forEach((letter) => {
+        const dir = parseFloat(letter.dataset.dir);
+        const mag = parseFloat(letter.dataset.mag);
+
+        const wobble = progress * dir * mag * 2.5;
+        const extraScale = 1 + progress * mag * 0.05;
+
+        letter.style.transform = `rotateZ(${wobble}deg) scale(${extraScale})`;
+      });
+
+      /* curved lines burst outward from behind the letters, drawn on as the camera pushes through */
+      const drawProgress = Math.min(progress / 0.55, 1);
+      const linesScale = 1 + progress * 2.4;
+      const linesRotate = progress * 12;
+      const linesOpacity = progress < 0.8 ? Math.min(progress / 0.12, 1) : Math.max(0, 1 - (progress - 0.8) / 0.2);
+
+      heroLines.style.transform = `scale(${linesScale}) rotate(${linesRotate}deg)`;
+      heroLines.style.opacity = linesOpacity;
+
+      linePaths.forEach((path) => {
+        const len = parseFloat(path.dataset.len);
+        path.style.strokeDashoffset = String(len * (1 - drawProgress));
+      });
+
+      /* bright lens-flash right as the camera passes through the letterforms */
+      let flash = 0;
+      if (progress > 0.74 && progress <= 0.92) {
+        flash = (progress - 0.74) / 0.18;
+      } else if (progress > 0.92) {
+        flash = Math.max(0, 1 - (progress - 0.92) / 0.08);
+      }
+      heroFlash.style.opacity = flash;
+
+      const metaFade = Math.max(0, 1 - progress / 0.22);
+      heroLabelEl.style.opacity = metaFade;
+      heroSubEl.style.opacity = metaFade;
+      scrollCueEl.style.opacity = progress > 0.04 ? 0 : 1;
+    }
+
+    let ticking = false;
+
+    function onScroll() {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateReelProgress();
+          updateHeroZoom();
+          ticking = false;
+        });
+
+        ticking = true;
+      }
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    onScroll();
+
+    /* ---------- generic scroll reveal ---------- */
+    const revealTargets = document.querySelectorAll("[data-reveal]");
+
+    if (reducedMotion) {
+      revealTargets.forEach((el) => el.classList.add("is-visible"));
+    } else {
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          threshold: 0.18,
+          rootMargin: "0px 0px -8% 0px"
+        }
+      );
+
+      revealTargets.forEach((el, index) => {
+        if (el.classList.contains("card")) {
+          el.style.transitionDelay = (index % 5) * 0.08 + "s";
+        }
+
+        revealObserver.observe(el);
+      });
+    }
+
+    /* ---------- stat count-up ---------- */
+    const statEls = document.querySelectorAll(".stat-count");
+
+    function animateCount(el) {
+      const target = parseInt(el.dataset.target, 10);
+      const duration = 1100;
+      const start = performance.now();
+
+      function tick(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const value = Math.round(eased * target);
+
+        el.textContent = String(value).padStart(2, "0");
+
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        }
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    if (reducedMotion) {
+      statEls.forEach((el) => {
+        el.textContent = String(el.dataset.target).padStart(2, "0");
+      });
+    } else {
+      const statObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              animateCount(entry.target);
+              statObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.6 }
+      );
+
+      statEls.forEach((el) => statObserver.observe(el));
+    }
   </script>
 
 </body>
