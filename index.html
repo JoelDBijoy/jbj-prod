@@ -27,6 +27,7 @@
       --bg: #08090D;
       --surface: #10111A;
       --accent: #D9A73A;
+      --accent-pop: #FF5A3C;
       --text: #EFEDE6;
       --muted: #52566B;
       --border: #1B1D26;
@@ -45,6 +46,36 @@
       overflow-x: hidden;
     }
 
+    @media (hover: hover) and (pointer: fine) {
+      body {
+        cursor: none;
+      }
+    }
+
+    /* ---------- ambient color wash ---------- */
+    .ambient {
+      position: fixed;
+      inset: -12%;
+
+      z-index: -1;
+
+      background:
+        radial-gradient(circle at 18% 20%, rgba(255, 90, 60, 0.16), transparent 36%),
+        radial-gradient(circle at 84% 78%, rgba(217, 167, 58, 0.16), transparent 40%);
+
+      filter: blur(70px);
+
+      animation: ambientDrift 26s ease-in-out infinite alternate;
+
+      pointer-events: none;
+    }
+
+    @keyframes ambientDrift {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-2%, 2%) scale(1.06); }
+      100% { transform: translate(2%, -1.5%) scale(1.03); }
+    }
+
     body::after {
       content: "";
       position: fixed;
@@ -55,6 +86,64 @@
       opacity: 0.045;
       pointer-events: none;
       z-index: 9999;
+    }
+
+    /* ---------- custom cursor ---------- */
+    .cursor-ring {
+      display: none;
+
+      position: fixed;
+      top: 0;
+      left: 0;
+
+      width: 26px;
+      height: 26px;
+
+      border: 1.5px solid var(--accent-pop);
+      border-radius: 50%;
+
+      pointer-events: none;
+      z-index: 3000;
+
+      transform: translate(-50%, -50%);
+
+      transition: width 0.2s ease, height 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .cursor-ring {
+        display: block;
+      }
+    }
+
+    .cursor-ring.is-active {
+      width: 52px;
+      height: 52px;
+
+      background: rgba(255, 90, 60, 0.25);
+    }
+
+    /* ---------- reel progress bar ---------- */
+    .reel-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+
+      z-index: 1000;
+
+      background: var(--border);
+    }
+
+    .reel-progress-fill {
+      height: 100%;
+      width: 0%;
+
+      background: var(--accent);
+      box-shadow: 0 0 8px rgba(217, 167, 58, 0.6);
+
+      transition: width 0.05s linear;
     }
 
     nav {
@@ -113,23 +202,80 @@
       transition: color 0.2s;
     }
 
+    .nav-links a::after {
+      content: "";
+
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+
+      width: 100%;
+      height: 1px;
+
+      background: var(--accent-pop);
+
+      transform: scaleX(0);
+      transform-origin: left;
+
+      transition: transform 0.3s ease;
+    }
+
     .nav-links a:hover {
       color: var(--text);
     }
 
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+
+    /* ---------- hero ---------- */
     .hero {
       min-height: 100vh;
 
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      justify-content: flex-end;
 
-      overflow: hidden;
-
-      padding: 0 3rem;
+      padding: 0 3rem 5rem;
 
       position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .hero-video {
+      position: absolute;
+      inset: 0;
+
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+      object-position: center;
+
+      z-index: -2;
+      pointer-events: none;
+
+      filter: brightness(0.46) saturate(0.85);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+
+      background:
+        linear-gradient(to top, rgba(8, 9, 13, 0.92) 0%, rgba(8, 9, 13, 0.42) 48%, rgba(8, 9, 13, 0.3) 100%);
+
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .hero-parallax {
+      display: flex;
+      flex-direction: column;
+
+      will-change: transform, opacity;
     }
 
     .hero-label {
@@ -137,48 +283,70 @@
       letter-spacing: 0.3em;
       text-transform: uppercase;
 
-      color: var(--accent);
+      color: var(--accent-pop);
 
       margin-bottom: 1.2rem;
       font-weight: 400;
+
+      overflow: hidden;
     }
 
-    .hero-title {
-      position: relative;
-      z-index: 2;
+    .hero-label span {
+      display: inline-block;
+      animation: labelIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: 0.15s;
+    }
 
+    @keyframes labelIn {
+      from { opacity: 0; transform: translateY(100%); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-name {
       font-family: "Bebas Neue", sans-serif;
 
-      font-size: clamp(4.5rem, 14vw, 12rem);
+      font-size: clamp(5.5rem, 15vw, 13rem);
       line-height: 0.88;
       letter-spacing: 0.015em;
 
       color: var(--text);
 
-      animation: fadeUp 0.9s ease both;
+      overflow: hidden;
+    }
+
+    .hero-name .line {
+      overflow: hidden;
+    }
+
+    .hero-name .line span {
+      display: inline-block;
+      animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .hero-name .line:nth-child(2) span {
+      animation-delay: 0.1s;
     }
 
     @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(24px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(100%); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .hero-sub {
-      position: relative;
-      z-index: 2;
-
       margin-top: 2rem;
 
       display: flex;
       align-items: center;
       gap: 2rem;
+
+      opacity: 0;
+      animation: simpleFade 0.8s ease both;
+      animation-delay: 0.6s;
+    }
+
+    @keyframes simpleFade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .hero-sub p {
@@ -187,13 +355,7 @@
 
       letter-spacing: 0.12em;
       font-weight: 300;
-
-      transition: color 0.3s;
     }
-
-    .hero-sub p:hover.tag-coral { color: var(--accent-coral); }
-    .hero-sub p:hover.tag-teal { color: var(--accent-teal); }
-    .hero-sub p:hover.tag-violet { color: var(--accent-violet); }
 
     .hero-sub .dot {
       width: 4px;
@@ -209,8 +371,6 @@
       position: absolute;
       right: 3rem;
       bottom: 4rem;
-
-      z-index: 2;
 
       display: flex;
       flex-direction: column;
@@ -367,6 +527,15 @@
       font-size: 3rem;
       letter-spacing: 0.08em;
       line-height: 1;
+
+      position: relative;
+
+      clip-path: inset(0 100% 0 0);
+      transition: clip-path 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .section-hd.is-visible h2 {
+      clip-path: inset(0 0 0 0);
     }
 
     .section-hd span {
@@ -406,7 +575,17 @@
 
       overflow: hidden;
 
-      transition: border-color 0.3s;
+      opacity: 0;
+      transform: translateY(56px) scale(0.97);
+
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.35s ease,
+        border-color 0.3s;
+    }
+
+    .card.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
 
     .card:nth-child(3),
@@ -422,7 +601,31 @@
     }
 
     .card:hover {
-      border-color: var(--accent);
+      border-color: var(--accent-pop);
+    }
+
+    .card::before {
+      content: "";
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+
+      height: 2px;
+
+      background: var(--accent-pop);
+
+      transform: scaleX(0);
+      transform-origin: left;
+
+      transition: transform 0.4s ease;
+
+      z-index: 11;
+    }
+
+    .card:hover::before {
+      transform: scaleX(1);
     }
 
     .card-tag {
@@ -444,10 +647,6 @@
 
       pointer-events: none;
     }
-
-    .card[data-hue="teal"] .card-tag { color: var(--accent-teal); }
-    .card[data-hue="coral"] .card-tag { color: var(--accent-coral); }
-    .card[data-hue="violet"] .card-tag { color: var(--accent-violet); }
 
     .card iframe,
     .card video {
@@ -582,7 +781,19 @@
       justify-self: start;
       align-self: start;
 
-      margin-top: 0;
+      opacity: 0;
+      transform: translateY(30px) scale(1.04);
+      filter: grayscale(0.4);
+
+      transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+        filter 1s ease;
+    }
+
+    .about-photo.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: grayscale(0);
     }
 
     .stats {
@@ -591,6 +802,21 @@
       gap: 3.5rem;
 
       margin-top: 0.7rem;
+    }
+
+    .stats > div {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .stats > div.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .stats > div:nth-child(2) {
+      transition-delay: 0.12s;
     }
 
     .stat-n {
@@ -634,6 +860,13 @@
       line-height: 0.92;
 
       margin-bottom: 2.5rem;
+
+      clip-path: inset(0 0 100% 0);
+      transition: clip-path 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .contact h2.is-visible {
+      clip-path: inset(0 0 0% 0);
     }
 
     .contact h2 span {
@@ -647,7 +880,7 @@
     }
 
     .contact-link {
-      color: var(--muted);
+      position: relative;
 
       color: var(--muted);
       text-decoration: none;
@@ -660,9 +893,20 @@
       padding-bottom: 0.2rem;
       border-bottom: 1px solid var(--border);
 
-      transition:
-        color 0.25s,
-        border-color 0.25s;
+      transition: color 0.25s, border-color 0.25s;
+
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
+    .contact-link.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: color 0.25s, border-color 0.25s, opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .contact-links .contact-link:nth-child(2).is-visible {
+      transition-delay: 0.1s;
     }
 
     .contact-link:hover {
@@ -686,94 +930,73 @@
       letter-spacing: 0.12em;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
+    /* ---------- floating "open for work" badge ---------- */
+    .badge {
+      position: fixed;
+      right: 2rem;
+      bottom: 2rem;
 
-      .section-hd h2,
-      .section-hd span,
-      .card,
-      .about-text,
-      .about-photo,
-      .stats > div,
-      .contact h2,
-      .contact-link {
-        animation: none !important;
-        transition: none !important;
-        opacity: 1 !important;
-        transform: none !important;
-        clip-path: inset(0 0 0 0) !important;
-      }
+      width: 108px;
+      height: 108px;
 
-      .hero-scroll {
-        height: auto;
-      }
+      z-index: 400;
 
-      .hero-pin {
-        position: relative;
-        height: 100vh;
-      }
+      text-decoration: none;
 
-      .hero-flash {
-        display: none !important;
-      }
-
-      .hero-lines {
-        display: none !important;
-      }
-
-      .ambient {
-        animation: none !important;
-      }
-
-      .letter {
-        opacity: 1 !important;
-        transform: none !important;
-        filter: none !important;
-      }
+      animation: badgeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: 1.4s;
     }
 
-    @media (max-width: 768px) {
-      nav {
-        padding: 1.2rem 1.5rem;
-      }
+    @keyframes badgeIn {
+      from { opacity: 0; transform: scale(0.6); }
+      to { opacity: 1; transform: scale(1); }
+    }
 
-      .nav-links {
-        display: none;
-      }
+    .badge-ring {
+      width: 100%;
+      height: 100%;
 
-      .hero {
-        padding: 0 1.5rem 4rem;
-      }
+      animation: badgeSpin 13s linear infinite;
+    }
 
-      .scroll-cue {
-        display: none;
-      }
+    @keyframes badgeSpin {
+      to { transform: rotate(360deg); }
+    }
 
-      .work {
-        padding: 4rem 1.5rem;
-      }
+    .badge-ring text {
+      font-family: "Inter", sans-serif;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
 
-      .grid {
-        grid-template-columns: 1fr;
-      }
+      fill: var(--bg);
+    }
 
-      .card,
-      .card:nth-child(3),
-      .card:nth-child(5),
-      .card--vertical {
-        grid-column: 1 / -1;
-        max-height: none;
-      }
+    .badge-circle-bg {
+      fill: var(--accent-pop);
+    }
 
-      .about {
-        grid-template-columns: 1fr;
+    .badge-center {
+      position: absolute;
+      inset: 0;
 
-        gap: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-        padding: 4rem 1.5rem;
-      }
+      pointer-events: none;
+    }
+
+    .badge-center svg {
+      width: 26px;
+      height: 26px;
+
+      color: var(--bg);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
 
       .hero-label span,
       .hero-name .line span,
@@ -873,6 +1096,13 @@
 
 <body>
 
+  <div class="ambient"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <div class="reel-progress">
+    <div class="reel-progress-fill" id="reelFill"></div>
+  </div>
+
   <nav id="nav">
     <a href="#" class="nav-brand">
       jbj<em>.</em>prod
@@ -886,30 +1116,31 @@
   </nav>
 
   <section class="hero" id="top">
-    <p class="hero-label">
-      Videographer &amp; Editor
-    </p>
+    <video class="hero-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+      <source src="projects/Title vid.mp4" type="video/mp4">
+    </video>
 
-    <h1 class="hero-name">
-      JOEL<br>
-      BIJOY
-    </h1>
+    <div class="hero-parallax" id="heroParallax">
+      <p class="hero-label">
+        <span>Videographer &amp; Editor</span>
+      </p>
 
-    <div class="hero-sub">
-      <p>Short Form</p>
+      <h1 class="hero-name">
+        <span class="line"><span>JOEL</span></span><br>
+        <span class="line"><span>BIJOY</span></span>
+      </h1>
 
-      <div class="dot"></div>
-
-      <p>Documentary</p>
-
-      <div class="dot"></div>
-
-      <p>Narrative</p>
+      <div class="hero-sub">
+        <p>Short Form</p>
+        <div class="dot"></div>
+        <p>Documentary</p>
+        <div class="dot"></div>
+        <p>Narrative</p>
+      </div>
     </div>
 
     <div class="scroll-cue">
       <div class="scroll-track"></div>
-
       <p>Scroll</p>
     </div>
   </section>
@@ -939,10 +1170,8 @@
 
     <div class="grid">
 
-      <div class="card">
-        <span class="card-tag">
-          Short Film
-        </span>
+      <div class="card" data-reveal>
+        <span class="card-tag">Short Film</span>
 
         <iframe
           src="https://www.youtube.com/embed/eqUWgmG2RaY?modestbranding=1&rel=0&color=white"
@@ -953,10 +1182,8 @@
         </iframe>
       </div>
 
-      <div class="card">
-        <span class="card-tag">
-          Documentary
-        </span>
+      <div class="card" data-reveal>
+        <span class="card-tag">Documentary</span>
 
         <video controls playsinline>
           <source src="projects/Chemistry Cinematic Video Project.mp4" type="video/mp4">
@@ -969,10 +1196,8 @@
         </div>
       </div>
 
-      <div class="card">
-        <span class="card-tag">
-          Short Form
-        </span>
+      <div class="card" data-reveal>
+        <span class="card-tag">Short Form</span>
 
         <video controls playsinline>
           <source src="projects/RMG Promo 1.mp4" type="video/mp4">
@@ -985,10 +1210,8 @@
         </div>
       </div>
 
-      <div class="card card--vertical">
-        <span class="card-tag">
-          Short Form
-        </span>
+      <div class="card card--vertical" data-reveal>
+        <span class="card-tag">Short Form</span>
 
         <video controls playsinline>
           <source src="projects/RMG Promo 2.mp4" type="video/mp4">
@@ -1001,13 +1224,11 @@
         </div>
       </div>
 
-      <div class="card">
-        <span class="card-tag">
-          Brand Promo
-        </span>
+      <div class="card" data-reveal>
+        <span class="card-tag">Brand Promo</span>
 
         <iframe
-          src="https://www.youtube.com/embed/DlqPxAc8_KY?modestbranding=1&rel=0&color=white"
+          src="https://www.youtube.com/embed/5HwFjIVEEtg?modestbranding=1&rel=0&color=white"
           title="Phocusd Cuts Brand Promo"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen
@@ -1044,34 +1265,20 @@
       </div>
 
       <div class="stats">
-        <div>
-          <p class="stat-n">
-            05<sup>+</sup>
-          </p>
-
-          <p class="stat-l">
-            Projects
-          </p>
+        <div data-reveal>
+          <p class="stat-n"><span class="stat-count" data-target="5">00</span><sup>+</sup></p>
+          <p class="stat-l">Projects</p>
         </div>
 
-        <div>
-          <p class="stat-n">
-            SEA
-          </p>
-
-          <p class="stat-l">
-            Based
-          </p>
+        <div data-reveal>
+          <p class="stat-n">SEA</p>
+          <p class="stat-l">Based</p>
         </div>
       </div>
 
     </div>
 
-    <img
-      src="Resume (2).png"
-      alt="Joel Bijoy"
-      class="about-photo"
-    >
+    <img src="Resume (2).png" alt="Joel Bijoy" class="about-photo" data-reveal>
   </section>
 
   <section class="contact" id="contact">
@@ -1081,17 +1288,11 @@
     </h2>
 
     <div class="contact-links">
-      <a
-        href="mailto:joeldbijoy@gmail.com"
-        class="contact-link">
+      <a href="mailto:joeldbijoy@gmail.com" class="contact-link" data-reveal>
         joeldbijoy@gmail.com
       </a>
 
-      <a
-        href="https://instagram.com/shotbyjbj"
-        class="contact-link"
-        target="_blank"
-        rel="noopener">
+      <a href="https://instagram.com/shotbyjbj" class="contact-link" target="_blank" rel="noopener" data-reveal>
         Instagram
       </a>
     </div>
@@ -1138,30 +1339,167 @@
 
     function buildStrip(element) {
       const fragment = document.createDocumentFragment();
-      const hues = [
-        "var(--accent)",
-        "var(--accent-coral)",
-        "var(--accent-teal)",
-        "var(--accent-violet)"
-      ];
 
       for (let i = 0; i < 90; i++) {
         const perforation = document.createElement("div");
         perforation.className = "perf";
-
         fragment.appendChild(perforation);
       }
 
       element.appendChild(fragment);
     }
 
-    buildStrip(
-      document.getElementById("strip")
-    );
+    buildStrip(document.getElementById("strip"));
+    buildStrip(document.getElementById("strip2"));
 
-    buildStrip(
-      document.getElementById("strip2")
-    );
+    /* ---------- reel progress bar ---------- */
+    const reelFill = document.getElementById("reelFill");
+
+    function updateReelProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+      reelFill.style.width = pct + "%";
+    }
+
+    /* ---------- hero parallax ---------- */
+    const heroParallax = document.getElementById("heroParallax");
+    const heroSection = document.getElementById("top");
+
+    function updateHeroParallax() {
+      if (reducedMotion) return;
+
+      const rect = heroSection.getBoundingClientRect();
+      const heroHeight = heroSection.offsetHeight;
+
+      const progress = Math.min(Math.max(-rect.top / heroHeight, 0), 1);
+
+      const translate = progress * 120;
+      const scale = 1 - progress * 0.08;
+      const opacity = 1 - progress * 1.1;
+
+      heroParallax.style.transform = `translateY(${translate}px) scale(${scale})`;
+      heroParallax.style.opacity = Math.max(opacity, 0);
+    }
+
+    let ticking = false;
+
+    function onScroll() {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateReelProgress();
+          updateHeroParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    onScroll();
+
+    /* ---------- generic scroll reveal ---------- */
+    const revealTargets = document.querySelectorAll("[data-reveal]");
+
+    if (reducedMotion) {
+      revealTargets.forEach((el) => el.classList.add("is-visible"));
+    } else {
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.18, rootMargin: "0px 0px -8% 0px" }
+      );
+
+      revealTargets.forEach((el, index) => {
+        if (el.classList.contains("card")) {
+          el.style.transitionDelay = (index % 5) * 0.08 + "s";
+        }
+        revealObserver.observe(el);
+      });
+    }
+
+    /* ---------- stat count-up ---------- */
+    const statEls = document.querySelectorAll(".stat-count");
+
+    function animateCount(el) {
+      const target = parseInt(el.dataset.target, 10);
+      const duration = 1100;
+      const start = performance.now();
+
+      function tick(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const value = Math.round(eased * target);
+
+        el.textContent = String(value).padStart(2, "0");
+
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    if (reducedMotion) {
+      statEls.forEach((el) => {
+        el.textContent = String(el.dataset.target).padStart(2, "0");
+      });
+    } else {
+      const statObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              animateCount(entry.target);
+              statObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.6 }
+      );
+
+      statEls.forEach((el) => statObserver.observe(el));
+    }
+
+    /* ---------- custom cursor ---------- */
+    const cursorRing = document.getElementById("cursorRing");
+    const isFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+    if (isFinePointer && !reducedMotion) {
+      window.addEventListener("pointermove", (e) => {
+        cursorRing.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+      });
+
+      document.querySelectorAll("a, .card, button").forEach((el) => {
+        el.addEventListener("mouseenter", () => cursorRing.classList.add("is-active"));
+        el.addEventListener("mouseleave", () => cursorRing.classList.remove("is-active"));
+      });
+    }
+
+    /* ---------- subtle card tilt on hover ---------- */
+    if (isFinePointer && !reducedMotion) {
+      document.querySelectorAll(".card").forEach((card) => {
+        card.addEventListener("mousemove", (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width - 0.5;
+          const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+          card.style.transform =
+            `perspective(700px) rotateX(${-y * 7}deg) rotateY(${x * 9}deg) translateY(-4px) scale(1.01)`;
+        });
+
+        card.addEventListener("mouseleave", () => {
+          card.style.transform = "";
+        });
+      });
+    }
   </script>
 
 </body>
