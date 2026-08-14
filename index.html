@@ -713,6 +713,35 @@
       transform: translateY(0);
     }
 
+    /* ---------- motion graphics ---------- */
+    .motion {
+      padding: 5rem 3rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .motion-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+
+    .motion-grid .card {
+      grid-column: auto;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+    }
+
+    @media (max-width: 900px) {
+      .motion-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .motion { padding: 4rem 1.5rem; }
+      .motion-grid { grid-template-columns: 1fr; }
+    }
+
     /* ---------- about ---------- */
     .about {
       padding: 5.5rem 4.5rem 6rem;
@@ -1110,6 +1139,7 @@
 
     <ul class="nav-links">
       <li><a href="#work">Work</a></li>
+      <li><a href="#motion">Motion Graphics</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
@@ -1243,6 +1273,55 @@
     <div class="strip-track" id="strip2"></div>
   </div>
 
+  <section class="motion" id="motion">
+    <div class="section-hd" data-reveal>
+      <h2>Motion Graphics</h2>
+      <span>03 Projects</span>
+    </div>
+
+    <div class="motion-grid">
+      <div class="card" data-reveal>
+        <span class="card-tag">Motion Graphic</span>
+        <video controls playsinline preload="metadata">
+          <source src="projects/Zawadi Vodka Motion Graphic.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div class="card-hover">
+          <h3>Zawadi Vodka</h3>
+          <p>Brand motion graphic</p>
+        </div>
+      </div>
+
+      <div class="card" data-reveal>
+        <span class="card-tag">Motion Graphic</span>
+        <video controls playsinline preload="metadata">
+          <source src="projects/The Barbergame Motion Graphic 1.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div class="card-hover">
+          <h3>The Barbergame</h3>
+          <p>Brand motion graphic</p>
+        </div>
+      </div>
+
+      <div class="card" data-reveal>
+        <span class="card-tag">Motion Graphic</span>
+        <video controls playsinline preload="metadata">
+          <source src="projects/ChopItUp Motion Graphic.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div class="card-hover">
+          <h3>ChopItUp Barbershop</h3>
+          <p>Brand motion graphic</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="strip-wrap">
+    <div class="strip-track" id="strip3"></div>
+  </div>
+
   <section class="about" id="about">
     <div class="about-main">
 
@@ -1351,6 +1430,7 @@
 
     buildStrip(document.getElementById("strip"));
     buildStrip(document.getElementById("strip2"));
+    buildStrip(document.getElementById("strip3"));
 
     /* ---------- reel progress bar ---------- */
     const reelFill = document.getElementById("reelFill");
